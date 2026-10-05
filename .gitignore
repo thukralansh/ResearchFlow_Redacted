@@ -1,0 +1,40 @@
+# Operating-system files
+.DS_Store
+
+# Python environments and caches
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Build and package artifacts
+build/
+dist/
+*.egg-info/
+
+# Local configuration and secrets
+.env
+.env.local
+.env.*.local
+.streamlit/secrets.toml
+
+# Local Supabase state
+supabase/.branches/
+supabase/.temp/
+supabase/.env
+.researchflow-test-stack/
+
+# Runtime-generated files and uploaded documents
+var/
+uploads/
+data/uploads/
+*.log
+*.tmp
+
+# Personal development papers are kept outside version control.
+/unofficial_papers(written_by_me)/

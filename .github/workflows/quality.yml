@@ -1,0 +1,54 @@
+name: Quality
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.11.32"
+          enable-cache: true
+
+      - name: Install Python
+        run: uv python install
+
+      - name: Install Supabase CLI
+        uses: supabase/setup-cli@v2
+        with:
+          version: "2.110.0"
+          github-token: ${{ github.token }}
+
+      - name: Install project dependencies
+        run: uv sync --frozen --all-groups
+
+      - name: Start disposable local Supabase
+        run: make test-stack-start
+
+      - name: Apply canonical database migrations
+        run: make test-stack-migrate
+
+      - name: Run quality gate
+        run: make quality
+
+      - name: Stop disposable local Supabase
+        if: ${{ always() && hashFiles('.researchflow-test-stack/supabase/config.toml') != '' }}
+        run: make test-stack-destroy
